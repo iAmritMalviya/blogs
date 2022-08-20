@@ -1,0 +1,24 @@
+<%- include('partials/header.ejs') %>
+
+<h2><%= title %></h2>
+<p><%= content %></p>
+<form action="/posts/<%=title%>" method="post">
+    <div class="mb-3">
+        <label for="comment" class="form-label">Your Thought On This Blog</label>
+        <textarea class="form-control" name="comment" id="comment" rows="3"></textarea>
+        <button type="submit" class="btn btn-primary">Post</button>
+      </div>
+</form>
+<article>
+  <form method="POST" action="/comment">
+      <div class="input-field">
+          <label>Comment:</label>
+          <textarea type="text" name="comment" rows="20" placeholder="What's on your mind?"></textarea>
+      </div>
+      <input type="hidden" name="article-id" value="{{article.id}}">
+      <button type="submit">Add Comment</button>
+  </form>
+</article>
+<%- include('partials/footer.ejs') %>
+
+
