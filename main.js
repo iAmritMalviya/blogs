@@ -8,7 +8,6 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const session = require("express-session");
 
 mongoose.connect("mongodb://localhost:27017/blogdb");
-// mongoose.connect('mongodb://localhost:27017/user');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -24,16 +23,24 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //mongoose create schema
+const commentSchema = mongoose.Schema({
+  comment: String, 
+
+})
 const blogSchema = mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: true, 
   },
   content: {
     type: String,
     required: true,
   },
+  comment: commentSchema
 });
+
+
+const Comment = mongoose.model('comment', commentSchema);
 
 const userschema = new mongoose.Schema({
   username: String,
@@ -58,24 +65,34 @@ app.get("/register", function (req, res) {
 
 app.get("/", function (req, res) {
 
+     {
         Blog.find({}, function (err, data) {
           if (err) {
+            console.log('this is err');
+            
             console.log(err);
           } else {
             blogs = data;
+            
             res.render("home", { title: "HOME", data: data, status: status });
           }
         });
-      
+       }
+   
   
 });
 
 app.get("/posts/:topic", (req, res) => {
+  if (blogs == undefined) {
+    res.redirect('/');
+  }
+  
   let searchedTitle = _.lowerCase(req.params.topic);
-  console.log(searchedTitle);
   blogs.forEach((element) => {
     let postTitle = _.lowerCase(element.title);
     if (postTitle == searchedTitle) {
+      console.log(element);
+      
       res.render("post", { title: element.title, content: element.content });
     }
   });
@@ -117,7 +134,7 @@ app.post("/register", function (req, res) {
     } else {
       console.log(result);
       passport.authenticate("local")(req, res, function () {
-        res.redirect("/home");
+        res.redirect("/compose");
       });
     }
   });
@@ -140,6 +157,19 @@ app.post('/login', function (req, res) {
         }
     })
 })
+let comment;
+app.post("/posts/:topic", function (req, res) {
+  console.log("this is topic" + req.params.topic);
+
+  let newComment = req.body.comment;
+   comment = new Comment({
+    comment: newComment
+  })
+  console.log(comment);
+  comment.save();
+  res.redirect("back");
+});
+
 
 app.post("/compose", function (req, res) {
   let title = req.body.title;
@@ -147,19 +177,13 @@ app.post("/compose", function (req, res) {
   const blog = new Blog({
     title: title,
     content: content,
+    comment: comment
   });
   blog.save();
 
   res.redirect("/");
 });
 
-app.post("/posts/:topic", function (req, res) {
-  console.log("this is topic" + req.params.topic);
-
-  let comment = req.body.comment;
-  console.log(comment);
-  res.redirect("/");
-});
 
 app.listen(3000, function () {
   console.log("The server has started at 3000");
