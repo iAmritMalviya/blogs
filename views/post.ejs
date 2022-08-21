@@ -3,10 +3,11 @@
 <h2><%= title %></h2>
 <p><%= content %></p>
 <form action="/posts/<%=title%>" method="post">
+  <button type="submit" name="title" value="<%=title%>" class="btn btn-danger" >DELETE</button>
     <div class="mb-3">
         <label for="comment" class="form-label">Your Thought On This Blog</label>
         <textarea class="form-control" name="comment" id="comment" rows="3"></textarea>
-        <button type="submit" class="btn btn-primary">Post</button>
+        <button type="submit" class="btn btn-primary" name="this">Post</button>
       </div>
 </form>
 <!-- <article>
