@@ -8,16 +8,17 @@ const commentSchema = mongoose.Schema({
 
   exports.Comment = mongoose.model('Comment', commentSchema)
   
-  const blogSchema = mongoose.Schema({
+  const blogSchema = new mongoose.Schema({
       title: {
         type: String,
         unique: true
       },
       content: String, 
+
       img: 
       {
         data: Buffer,
-        type: String
+        contentType: String
       },
       comments: [
         {

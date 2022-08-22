@@ -30,10 +30,19 @@
    
     <div class="container">
 
+      <img src="/images/ai.aa60586b.png" alt="" height="200rem" width="200rem">
 <h1><%= title %></h1>
 <% data.forEach(element => { %>
     
     <h2><%= (element.title).substr(0,50) %></h2>
+    <div>
+
+      <% let src=`data:image/${element.img.contentType};base64,${element.img.data.toString('base64')}` %>
+      <% console.log(src)  %>
+
+      <img src="data:image/png;base64,<%=element.img.data.toString('base64')%>" height="200px" width="200px">
+      
+      <div>
     <p><%= (element.content).substr(0,200) + "..." %><a href="/posts/<%=element.title%>">Read More</a></p>
 
 
