@@ -73,10 +73,10 @@ app
         const newImage = new Blog({
           title: req.body.title,
           content: req.body.content,
-          img: {
-            data: req.file.filename,
-            contentType: "image/png",
-          },
+          // img: {
+          //   data: req.file.filename,
+          //   contentType: "image/png",
+          // },
         });
         newImage
           .save()
