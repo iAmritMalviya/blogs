@@ -53,6 +53,7 @@ app.get("/", function (req, res) {
       res.status(500).send("An error occurred", err);
     } else {
       blogs = data;
+      console.log(blogs);
 
       res.render("home", { title: "HOME", data: data });
     }
@@ -77,7 +78,9 @@ app
           //   data: req.file.filename,
           //   contentType: "image/png",
           // },
+         
         });
+        
         newImage
           .save()
           .then(() => {
@@ -109,16 +112,29 @@ app
     deleteTitle = req.body.title;
     console.log(deleteTitle);
 
+  if (deleteTitle != undefined) {
     Blog.deleteOne({ title: deleteTitle })
-      .then(function () {
-        console.log("blog has been deleted");
-        res.redirect("/");
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
-
-    // res.redirect('back')
+    .then(function () {
+      console.log("blog has been deleted");
+      res.redirect("/");
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+    
+  }
+  else
+  {
+    res.redirect('back')
+    let comments = req.body.comment;
+    let newComment = Comment({
+      comment: comments,
+    })
+    newComment.save(() =>{
+      console.log('comment has been saved');
+      
+    })
+  }
   });
 
 var port = process.env.PORT || 3000;

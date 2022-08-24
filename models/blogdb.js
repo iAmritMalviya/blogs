@@ -1,12 +1,17 @@
 const mongoose = require('mongoose');
-mongoose.connect("mongodb+srv://test123:test123@cluster0.m0y1zik.mongodb.net/blogdb");
+// mongoose.connect("mongodb+srv://test123:test123@cluster0.m0y1zik.mongodb.net/blogdb");
+
+mongoose.connect('mongodb://localhost:27017/newDB')
 
 
-const commentSchema = mongoose.Schema({
-    comment: String
+const Comment = mongoose.model(
+  "Comment",
+  new mongoose.Schema({
+    comment: String,
   })
+);
 
-  exports.Comment = mongoose.model('Comment', commentSchema)
+  exports.Comment = Comment;
   
   const blogSchema = new mongoose.Schema({
       title: {
