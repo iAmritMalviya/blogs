@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 // mongoose.connect("mongodb+srv://test123:test123@cluster0.m0y1zik.mongodb.net/blogdb");
 const passportLocalMongoose = require('passport-local-mongoose');
-mongoose.connect("mongodb://localhost:27017/newDB",  { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+mongoose.connect(process.env.MONGODB_URI,  { useNewUrlParser: true, useUnifiedTopology: true }, err => {
   console.log('connected')
 });
 var commentSchema = new mongoose.Schema(
@@ -24,6 +24,8 @@ var commentSchema = new mongoose.Schema(
 );
 
 const Comment = mongoose.model("Comment", commentSchema);
+// heroku config:set
+// MONGODB_URI="mongodb+srv://Atlas-admin:redminote4@leaflix-east.6eqvyzm.mongodb.net/?retryWrites=true&w=majority"
 
 exports.Comment = Comment;
 
