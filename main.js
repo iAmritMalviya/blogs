@@ -25,7 +25,6 @@ app.use(express.static("files"));
 const db = require("./models/blogdb");
 const Blog = db.Blog;
 const Comment = db.Comment;
-let blogs;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -38,14 +37,6 @@ const storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
-Blog.find({}, function (err, data) {
-  if (err) {
-    console.log(err);
-    res.status(500).send("An error occurred", err);
-  } else {
-    blogs = data;
-  }
-});
 
 // routes here
 app.get("/", function (req, res) {
@@ -96,18 +87,17 @@ app
         if (err) {
           console.log(err);
         } else {
-
-          // console.log(docs);
           let comment = docs;
-          //  console.log(comment[0].comment);
-
-          if (comment === undefined) {
-            
-            // comment[0].comment.forEach((element) => {
-            //   commentfiles.push(element.comment);
-              console.log('this is undefined');
-            // });
-          }
+          
+          try {
+              comment[0].comment.forEach((element) => {
+              commentfiles.push(element.comment);
+            console.log('this is undefined');
+            });
+          } catch (error) {
+            console.log(error)
+          }            
+          
         }
       });
     Blog.find({}, function (err, data) {
@@ -123,7 +113,7 @@ app
               res.render("post", {
                 title: postTitle,
                 content: element.content,
-                // comment: commentfiles || '',
+                comment: commentfiles ,
                 image: element.img,
                 id: element._id,
               });
