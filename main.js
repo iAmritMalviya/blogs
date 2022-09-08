@@ -8,7 +8,7 @@ var express = require("express");
 const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
-var router = express.Router();
+// var router = express.Router();
 
 // const here
 const app = express();
@@ -37,7 +37,6 @@ const storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
-
 // routes here
 app.get("/", function (req, res) {
   Blog.find({}, function (err, data) {
@@ -45,7 +44,7 @@ app.get("/", function (req, res) {
       console.log(err);
       res.status(500).send("An error occurred", err);
     } else {
-      blogs = data;
+      // blogs = data;
 
       res.render("home", { title: "HOME", data: data });
     }
@@ -80,40 +79,37 @@ app
     let searchTitle = req.params.topic;
     let commentfiles = [];
 
-    Blog.find({ title: searchTitle })
-    .lean()
+    Blog.find({ title: req.params.topic })
+      .lean()
       .populate("comment")
       .exec((err, docs) => {
         if (err) {
           console.log(err);
         } else {
-          let comment = docs;
-          
           try {
-              comment[0].comment.forEach((element) => {
-              commentfiles.push(element.comment);
-            console.log('this is undefined');
+            docs[0].comment.forEach((element) => {
+              commentfiles.push(element);
+              console.log(commentfiles);
+              
             });
           } catch (error) {
-            console.log(error)
-          }            
-          
+            console.log(error);
+          }
         }
       });
+      
     Blog.find({}, function (err, data) {
       if (err) {
-
-        res.status(500).send('An error occurred', err);
+        res.status(500).send("An error occurred", err);
       } else {
         data.forEach((element) => {
           let postTitle = element.title;
           if (searchTitle == postTitle) {
             setTimeout(() => {
-
               res.render("post", {
                 title: postTitle,
                 content: element.content,
-                comment: commentfiles ,
+                comment: commentfiles,
                 image: element.img,
                 id: element._id,
               });
@@ -136,7 +132,13 @@ app
           console.log(err);
         });
     } else {
-      const comment = new Comment({ comment: req.body.comment });
+      console.log(req.body);
+      let commentObj = {
+        comment: req.body.comment,
+        username: req.body.username,
+      };
+
+      const comment = new Comment(commentObj);
       await comment.save();
       await Blog.findOneAndUpdate(
         { _id: req.body._id },

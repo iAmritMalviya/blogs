@@ -24,16 +24,19 @@
 </form>
 <div class="container">
 
-    <%# comment.forEach(element => { %>
-    <h2> <%#= (image) %> </h2>
-<%# })%>
+    <% comment.forEach(element => { %>
+    <h3 class="display-3"> <%= (element.username) %> </h3>
+    <p> <%= (element.comment) %> </>
+<% })%>
 
  
   <form method="POST" onsubmit="return doComment(this);" >
     <input type="hidden" name="_id" value="<%=id%>">
         <div class="row">
         
-       
+         
+         <div class="col-12"><textarea name="username" placeholder="Username"></textarea></div>
+      </div>
          <div class="col-12"><textarea name="comment" placeholder="Comments"></textarea></div>
       </div>
     <button class="btn btn-primary">POST COMMENT</button>
