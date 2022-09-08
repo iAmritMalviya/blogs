@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 // mongoose.connect("mongodb+srv://test123:test123@cluster0.m0y1zik.mongodb.net/blogdb");
-
+const passportLocalMongoose = require('passport-local-mongoose');
 mongoose.connect("mongodb://localhost:27017/newDB",  { useNewUrlParser: true, useUnifiedTopology: true }, err => {
   console.log('connected')
 });
@@ -34,6 +34,7 @@ const blogSchema = new mongoose.Schema({
   },
 
   content: String,
+  author: String,
   img: {
     data: Buffer,
     contentType: String,
@@ -49,3 +50,13 @@ const blogSchema = new mongoose.Schema({
 const Blog = mongoose.model("Blog", blogSchema);
 
 exports.Blog = Blog;
+
+
+let userSchema = new mongoose.Schema({
+  username: String,
+  password: String
+})
+userSchema.plugin(passportLocalMongoose);
+
+const User = mongoose.model('User', userSchema);
+exports.User = User;

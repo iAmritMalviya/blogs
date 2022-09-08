@@ -2,12 +2,15 @@
 
 // package here
 var express = require("express");
+const session = require("express-session");
 (mongoose = require("mongoose")),
   (ejs = require("ejs")),
   (bodyParser = require("body-parser"));
 const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
+const passport = require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
 // var router = express.Router();
 
 // const here
@@ -19,12 +22,23 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(express.static("files"));
-
+app.use(
+  session({
+    secret: "password",
+    saveUninitialized: false,
+    resave: false,
+    cookie: { maxAge: 600000 },
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 // const Comment = require('./models/commets');
 
 const db = require("./models/blogdb");
 const Blog = db.Blog;
 const Comment = db.Comment;
+const User = db.User;
+let username;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -37,6 +51,17 @@ const storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+app.use(function (req, res, next) {
+  res.locals.session = req.session;
+
+  next();
+
+  
+});
+
 // routes here
 app.get("/", function (req, res) {
   Blog.find({}, function (err, data) {
@@ -44,32 +69,91 @@ app.get("/", function (req, res) {
       console.log(err);
       res.status(500).send("An error occurred", err);
     } else {
-
-      res.render("home", { title: "HOME", data: data });
+      res.render("home", { title: "HOME", data: data});
+    
     }
   });
 });
 
-app.get("/compose", (req, res) => {
-  res.render("compose", { title: "COMPOSE" });
-});
+app
+  .route("/register")
+  .get((req, res) => {
+    res.render("register");
+  })
+  .post((req, res) => {
+    User.register(
+      { username: req.body.username },
+      req.body.password,
+      function (err, result) {
+        if (err) {
+          res.send(err);
+        } else {
+          console.log(result);
+          username = result.username;
+          passport.authenticate("local")(req, res, function () {
+            req.session.loggedin = true;
 
-app.post("/compose", upload.single("image"), (req, res) => {
-  var obj = {
-    title: req.body.title,
-    content: req.body.content,
-    img: {
-      data: fs.readFileSync(
-        path.join(__dirname + "/uploads/" + req.file.filename)
-      ),
-      contentType: "image/png",
-    },
-  };
+            res.redirect("/compose");
+          });
+        }
+      }
+    );
+  });
+app
+  .route("/login")
+  .get((req, res) => {
+    res.render("login");
+  })
+  .post((req, res) => {
+    let user = new User({
+      username: req.body.username,
+      password: req.body.password,
+    });
+    req.login(user, (err) => {
+      if (err) res.send("password or username is incorrect");
+      else {
+        passport.authenticate("local")(req, res, function () {
+          username = req.user.username;
+          req.session.loggedin = true;
 
-  let blog = Blog(obj);
-  blog.save();
+          res.redirect("/compose");
+        });
+      }
+    });
+  });
 
-  res.redirect("back");
+app
+  .route("/compose")
+  .get((req, res) => {
+    if (req.isAuthenticated()) {
+      res.render("compose", { title: "COMPOSE" });
+    } else {
+      res.redirect("/login");
+    }
+  })
+  .post(upload.single("image"), (req, res) => {
+    var obj = {
+      title: req.body.title,
+      content: req.body.content,
+      author: username,
+      img: {
+        data: fs.readFileSync(
+          path.join(__dirname + "/uploads/" + req.file.filename)
+        ),
+        contentType: "image/png",
+      },
+    };
+
+    let blog = Blog(obj);
+    blog.save();
+
+    res.redirect("back");
+  });
+app.get("/logout", function (req, res) {
+  req.logout((err) => {
+    if (err) console.log(err);
+    else res.redirect("/");
+  });
 });
 
 app
@@ -88,14 +172,13 @@ app
           try {
             docs[0].comment.forEach((element) => {
               commentfiles.push(element);
-              
             });
           } catch (error) {
             console.log(error);
           }
         }
       });
-      
+
     Blog.find({}, function (err, data) {
       if (err) {
         res.status(500).send("An error occurred", err);
@@ -117,7 +200,6 @@ app
       }
     });
   })
-
   .post(async (req, res) => {
     deleteTitle = req.body.delete;
     if (deleteTitle != undefined) {
@@ -130,10 +212,9 @@ app
           console.log(err);
         });
     } else {
-      console.log(req.body);
       let commentObj = {
         comment: req.body.comment,
-        username: req.body.username,
+        username: username,
       };
 
       const comment = new Comment(commentObj);

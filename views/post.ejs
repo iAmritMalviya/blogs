@@ -1,47 +1,41 @@
 <%- include('partials/header.ejs') %>
 
-<script>
+<body>
+<div class="container">
 
-    function doComment(form){
-    $.ajax({
-    url:"/posts/<%=title%>",
-    method:"POST",
-    data:{comment:form.comment.value,
-        _id:form._id.value},
-    success: function(response){
-    alert(response);
-        }
-    });
-    return false;
-}
-</script>
+
+<img src="data:image/<%=image.contentType%>;base64,<%=image.data.toString('base64')%>" alt="image" style="width: 200px;height:200px ;" >
 <h2><%= title %></h2>
 <p><%= content %></p>
-<img src="data:image/<%=image.contentType%>;base64,<%=image.data.toString('base64')%>" alt="image" style="width: 200px;height:200px ;" >
-<form action="/posts/<%=title%>" method="post">
-  <button type="submit" name="delete" value="<%=title%>" class="btn btn-danger" value="delete" >DELETE</button>
+<form action="/posts/<%=title%>" method="post" >
+  <!-- <button type="submit" name="delete" value="<%#=title%>" class="btn btn-danger" value="delete" >DELETE</button> -->
   
 </form>
 <div class="container">
+  <h5 class="display-5">Comment here</h5>
 
     <% comment.forEach(element => { %>
     <h3 class="display-3"> <%= (element.username) %> </h3>
     <p> <%= (element.comment) %> </>
-<% })%>
+<% })%> 
 
- 
   <form method="POST" onsubmit="return doComment(this);" >
     <input type="hidden" name="_id" value="<%=id%>">
-        <div class="row">
-        
-         
-         <div class="col-12"><textarea name="username" placeholder="Username"></textarea></div>
-      </div>
-         <div class="col-12"><textarea name="comment" placeholder="Comments"></textarea></div>
+        <div class="row">       
+     
+     
+         <div class="form-floating">
+          <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" name="comment"></textarea>
+          <label for="floatingTextarea">Comments</label>
+        </div>
       </div>
     <button class="btn btn-primary">POST COMMENT</button>
 </form>
 </div>
+</div>
+
+<%- include('partials/footer.ejs') %>
+
 
 <!-- <article>
   <form method="POST" action="/comment">
@@ -53,6 +47,3 @@
       <button type="submit">Add Comment</button>
   </form>
 </article> -->
-<%- include('partials/footer.ejs') %>
-
-

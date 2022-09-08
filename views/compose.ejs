@@ -1,4 +1,5 @@
 <%- include('partials/header.ejs') %>
+<div class="container my-5">
 
 <h1><%= title %></h1>
 
@@ -13,9 +14,11 @@
       </div>
       <div class="mb-3">
         <label for="image" class="form-label">Default file input example</label>
-        <input class="form-control" type="file" id="image" name="image" value="">
+        <input class="form-control" type="file" id="image" name="image" value="" required>
       </div>
       
       <button class="btn btn-primary" type="submit" >POST</button>
     </form>
+</div>
+
 <%- include('partials/footer.ejs') %>
