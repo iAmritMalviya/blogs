@@ -1,15 +1,45 @@
 <%- include('partials/header.ejs') %>
 
+<script>
+
+    function doComment(form){
+    $.ajax({
+    url:"/posts/<%=title%>",
+    method:"POST",
+    data:{comment:form.comment.value,
+        _id:form._id.value},
+    success: function(response){
+    alert(response);
+        }
+    });
+    return false;
+}
+</script>
 <h2><%= title %></h2>
 <p><%= content %></p>
+<img src="data:image/<%=image.contentType%>;base64,<%=image.data.toString('base64')%>" alt="image" style="width: 200px;height:200px ;" >
 <form action="/posts/<%=title%>" method="post">
-  <button type="submit" name="title" value="<%=title%>" class="btn btn-danger" >DELETE</button>
-    <div class="mb-3">
-        <label for="comment" class="form-label">Your Thought On This Blog</label>
-        <textarea class="form-control" name="comment" id="comment" rows="3"></textarea>
-        <button type="submit" class="btn btn-primary" name="this">Post</button>
-      </div>
+  <button type="submit" name="delete" value="<%=title%>" class="btn btn-danger" value="delete" >DELETE</button>
+  
 </form>
+<div class="container">
+
+    <%# comment.forEach(element => { %>
+    <h2> <%#= (image) %> </h2>
+<%# })%>
+
+ 
+  <form method="POST" onsubmit="return doComment(this);" >
+    <input type="hidden" name="_id" value="<%=id%>">
+        <div class="row">
+        
+       
+         <div class="col-12"><textarea name="comment" placeholder="Comments"></textarea></div>
+      </div>
+    <button class="btn btn-primary">POST COMMENT</button>
+</form>
+</div>
+
 <!-- <article>
   <form method="POST" action="/comment">
       <div class="input-field">

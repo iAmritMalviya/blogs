@@ -2,19 +2,20 @@
 
 <h1><%= title %></h1>
 
-<form action="/compose" method="post" enctype="multipart/form-data">
+<form action="/compose" method="post" enctype="multipart/form-data" >
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input type="text" class="form-control" id="title" placeholder="Titie Here" name="title">
       </div>
       <div class="mb-3">
         <label for="content" class="form-label">Content</label>
-        <textarea class="form-control" id="contnet" name="content" rows="3"></textarea>
+        <textarea class="form-control" id="content" name="content" rows="3"></textarea>
       </div>
       <div class="mb-3">
-        <label for="image">Upload Image</label>
-        <input type="file" id="image" name="image" value="">
+        <label for="image" class="form-label">Default file input example</label>
+        <input class="form-control" type="file" id="image" name="image" value="">
       </div>
-      <button class="btn btn-primary" type="submit" >COMPOSE</button>
+      
+      <button class="btn btn-primary" type="submit" >POST</button>
     </form>
 <%- include('partials/footer.ejs') %>
