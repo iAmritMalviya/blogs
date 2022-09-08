@@ -44,7 +44,6 @@ app.get("/", function (req, res) {
       console.log(err);
       res.status(500).send("An error occurred", err);
     } else {
-      // blogs = data;
 
       res.render("home", { title: "HOME", data: data });
     }
@@ -89,7 +88,6 @@ app
           try {
             docs[0].comment.forEach((element) => {
               commentfiles.push(element);
-              console.log(commentfiles);
               
             });
           } catch (error) {
@@ -113,7 +111,7 @@ app
                 image: element.img,
                 id: element._id,
               });
-            }, 1000);
+            }, 500);
           }
         });
       }
