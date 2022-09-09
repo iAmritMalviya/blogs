@@ -29,7 +29,7 @@ app.use(
     secret: "password",
     saveUninitialized: false,
     resave: false,
-    cookie: { maxAge: 600000 },
+    // cookie: { maxAge: 600000 },
   })
 );
 app.use(passport.initialize());
@@ -95,7 +95,7 @@ app.use(function (req, res, next) {
 
 // routes here
 app.get("/", function (req, res) {
-  Blog.find({"title": {$ne: ''} }, function (err, data) {
+  Blog.find({}, function (err, data) {
     if (err) {
       console.log(err);
       res.status(500).send("An error occurred", err);
@@ -114,7 +114,7 @@ app.get('/auth/google',
   function(req, res) {
     // Successful authentication, redirect home.
     req.session.loggedin = true;
-    res.redirect('/');
+    res.redirect('/compose');
   });
 
 app
@@ -278,7 +278,7 @@ app
 //     res.send("Comment was added successfully");
 // })
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 5500;
 app.listen(port, function () {
   console.log("Server Has Started!");
 });
