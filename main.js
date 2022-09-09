@@ -11,7 +11,6 @@ const session = require("express-session");
 const multer = require("multer");
 const path = require("path");
 const passport = require("passport");
-const passportLocalMongoose = require("passport-local-mongoose");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 // var router = express.Router();
