@@ -1,16 +1,19 @@
 // modules here
 
 // package here
+require('dotenv').config();
 var express = require("express");
 const session = require("express-session");
 (mongoose = require("mongoose")),
   (ejs = require("ejs")),
   (bodyParser = require("body-parser"));
-const fs = require("fs");
+  const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 const passport = require("passport");
 const passportLocalMongoose = require("passport-local-mongoose");
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const findOrCreate = require('mongoose-findorcreate');
 // var router = express.Router();
 
 // const here
@@ -52,8 +55,37 @@ const storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 passport.use(User.createStrategy());
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// passport.serializeUser(User.serializeUser());
+// passport.deserializeUser(User.deserializeUser());
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+  // if you use Model.id as your idAttribute maybe you'd want
+  // done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+User.findById(id, function(err, user) {
+  done(err, user);
+});
+});
+
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/compose",
+  userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+},
+function(accessToken, refreshToken, profile, cb) {
+  console.log(profile);
+  
+  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    return cb(err, user);
+  });
+}
+));
+
+
 app.use(function (req, res, next) {
   res.locals.session = req.session;
 
@@ -64,7 +96,7 @@ app.use(function (req, res, next) {
 
 // routes here
 app.get("/", function (req, res) {
-  Blog.find({}, function (err, data) {
+  Blog.find({"title": {$ne: ''} }, function (err, data) {
     if (err) {
       console.log(err);
       res.status(500).send("An error occurred", err);
@@ -74,6 +106,17 @@ app.get("/", function (req, res) {
     }
   });
 });
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ["profile"] }));
+
+  app.get('/auth/google/compose', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    req.session.loggedin = true;
+    res.redirect('/');
+  });
 
 app
   .route("/register")
@@ -93,7 +136,8 @@ app
           passport.authenticate("local")(req, res, function () {
             req.session.loggedin = true;
 
-            res.redirect("/compose");
+
+            res.redirect("/");
           });
         }
       }
@@ -116,7 +160,7 @@ app
           username = req.user.username;
           req.session.loggedin = true;
 
-          res.redirect("/compose");
+          res.redirect("/");
         });
       }
     });

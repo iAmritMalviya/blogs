@@ -1,9 +1,13 @@
 const mongoose = require("mongoose");
 // mongoose.connect("mongodb+srv://test123:test123@cluster0.m0y1zik.mongodb.net/blogdb");
 const passportLocalMongoose = require('passport-local-mongoose');
-mongoose.connect(process.env.MONGODB_URI,  { useNewUrlParser: true, useUnifiedTopology: true }, err => {
-  console.log('connected')
-});
+const findOrCreate = require('mongoose-findorcreate');
+
+
+// mongoose.connect(process.env.MONGODB_URI,  { useNewUrlParser: true, useUnifiedTopology: true }, err => {console.log('connected')});
+
+
+mongoose.connect('mongodb://localhost:27017/blogdb',  { useNewUrlParser: true, useUnifiedTopology: true }, err => {console.log('connected')});
 var commentSchema = new mongoose.Schema(
   {
     comment: {
@@ -56,9 +60,11 @@ exports.Blog = Blog;
 
 let userSchema = new mongoose.Schema({
   username: String,
-  password: String
+  password: String,
+  googleId: String
 })
 userSchema.plugin(passportLocalMongoose);
+userSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', userSchema);
 exports.User = User;
