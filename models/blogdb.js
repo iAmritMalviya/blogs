@@ -7,7 +7,7 @@ const findOrCreate = require('mongoose-findorcreate');
 // mongoose.connect(process.env.MONGODB_URI,  { useNewUrlParser: true, useUnifiedTopology: true }, err => {console.log('connected')});
 
 
-mongoose.connect('mongodb://localhost:27017/blogdb',  { useNewUrlParser: true, useUnifiedTopology: true }, err => {console.log('connected')});
+mongoose.connect( process.env.DATABASE_URI || 'mongodb://localhost:27017/blogdb',  { useNewUrlParser: true, useUnifiedTopology: true }, err => {console.log('connected')});
 var commentSchema = new mongoose.Schema(
   {
     comment: {
