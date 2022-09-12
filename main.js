@@ -278,7 +278,7 @@ app
 //     res.send("Comment was added successfully");
 // })
 
-var port = process.env.PORT || 5500;
+var port = process.env.PORT || 3000;
 app.listen(port, function () {
   console.log("Server Has Started!");
 });
